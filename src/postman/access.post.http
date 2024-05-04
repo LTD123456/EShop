@@ -20,3 +20,10 @@ x-api-key: 6cfd3ad0-cb83-45dc-8cf9-2ccfed511507
     "email": "shoptipjs9@gmail.com",
     "password": "abc123"
 }
+
+### LogOut
+POST {{url_dev}}/shop/logout
+Content-Type: application/json
+x-api-key: 6cfd3ad0-cb83-45dc-8cf9-2ccfed511507
+x-client-id: 6635f4126efae4a70fc38b20
+authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NjM1ZjQxMjZlZmFlNGE3MGZjMzhiMjAiLCJlbWFpbCI6InNob3B0aXBqczlAZ21haWwuY29tIiwiaWF0IjoxNzE0ODE1NTc1LCJleHAiOjE3MTQ5ODgzNzV9.-shrsJxka4IlP5oQqZ-gTUhlwW2QH-FvB7S3WatpcH0

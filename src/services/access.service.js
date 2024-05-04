@@ -123,6 +123,7 @@ class AccessService {
       publicKey,
       privateKey
     );
+    console.log(`Created Token Success`, tokens);
     await KeyTokenService.createKeyToken({
       userId: foundShop._id,
       publicKey,
@@ -135,8 +136,15 @@ class AccessService {
         fields: ["_id", "name", "email"],
         object: foundShop,
       }),
+      tokens
     };
   };
+
+  static logout = async (keyStore) => {
+    const delKey = await KeyTokenService.removeKeyById(keyStore._id);
+    console.log("delete key store:::", delKey);
+    return delKey;
+  }
 }
 
 module.exports = AccessService;
