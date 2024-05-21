@@ -15,13 +15,22 @@ class AccessController {
     new SuccessResponse({
       message: "Login successfully!!!!",
       metadata: await AccessService.login(req.body),
-    }).send(res);    
+    }).send(res);
   };
 
   logout = async (req, res, next) => {
     new SuccessResponse({
       message: "Logout successfully!!!!",
       metadata: await AccessService.logout(req.keyStore),
+    }).send(res);
+  };
+
+  handlerRefreshToken = async (req, res, next) => {
+    new SuccessResponse({
+      message: "Get Token Successfully!!!!",
+      metadata: await AccessService.handleRefreshToken({
+        refreshToken: req.body.refreshToken,
+      }),
     }).send(res);
   };
 }

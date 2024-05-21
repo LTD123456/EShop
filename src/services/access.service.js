@@ -3,7 +3,7 @@
 const shopModel = require("../models/shop.model");
 const bcrypt = require("bcrypt");
 const KeyTokenService = require("./keyToken.service");
-const { createTokenPair } = require("../auth/authUtils");
+const { createTokenPair, verifyJWT } = require("../auth/authUtils");
 const RoleShop = {
   SHOP: "SHOP",
   WRITER: "WRITER",
@@ -15,6 +15,7 @@ const {
   BadRequestError,
   ConflictRequestError,
   AuthFailureError,
+  ForbiddenError,
 } = require("../core/error.response");
 const { findByEmail } = require("./shop.service");
 
@@ -136,7 +137,7 @@ class AccessService {
         fields: ["_id", "name", "email"],
         object: foundShop,
       }),
-      tokens
+      tokens,
     };
   };
 
@@ -144,7 +145,72 @@ class AccessService {
     const delKey = await KeyTokenService.removeKeyById(keyStore._id);
     console.log("delete key store:::", delKey);
     return delKey;
-  }
+  };
+
+  /*
+  check  token used 
+  */
+  static handleRefreshToken = async ({ refreshToken }) => {
+    console.log(`refreshToken 1`, refreshToken);
+    const foundToken = await KeyTokenService.findByRefreshTokenUsed(
+      refreshToken
+    );
+    if (foundToken) {
+      //decode token xem token này của user nào
+      const { userId, email } = await verifyJWT(
+        refreshToken,
+        foundToken.privateKey
+      );
+      console.log(`decoded token:::`, userId, email);
+      //xóa các token cũ của user
+      await KeyTokenService.deleteKeyById(userId);
+      throw new ForbiddenError(
+        "Error:::: Some thing wrong happend!!! Please re-login!!!"
+      );
+    }
+
+    //Not found token
+    console.log(`refreshToken 2`, refreshToken);
+    const holderToken = await KeyTokenService.findByRefreshToken(refreshToken);
+    if (!holderToken) {
+      throw new AuthFailureError("Error:::: Shop not registered ");
+    }
+
+    //verifyToken
+    const { userId, email } = await verifyJWT(
+      refreshToken,
+      holderToken.privateKey
+    );
+    console.log(`decoded token 2:::`, userId, email);
+    //check userId
+    const foundShop = await findByEmail({ email });
+
+    if (!foundShop) {
+      throw new AuthFailureError("Error:::: Shop not registered 2");
+    }
+
+    //create new token pair
+    const tokens = await createTokenPair(
+      { userId: userId, email },
+      holderToken.publicKey,
+      holderToken.privateKey
+    );
+
+    //update token
+    await holderToken.updateOne({
+      $set: {
+        refreshToken: tokens.refreshToken,
+      },
+      $addToSet: {
+        refreshTokensUsed: refreshToken,
+      },
+    });
+
+    return {
+      user: { userId, email },
+      tokens,
+    };
+  };
 }
 
 module.exports = AccessService;

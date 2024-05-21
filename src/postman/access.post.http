@@ -27,3 +27,14 @@ Content-Type: application/json
 x-api-key: 6cfd3ad0-cb83-45dc-8cf9-2ccfed511507
 x-client-id: 6635f4126efae4a70fc38b20
 authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NjM1ZjQxMjZlZmFlNGE3MGZjMzhiMjAiLCJlbWFpbCI6InNob3B0aXBqczlAZ21haWwuY29tIiwiaWF0IjoxNzE0ODE1NTc1LCJleHAiOjE3MTQ5ODgzNzV9.-shrsJxka4IlP5oQqZ-gTUhlwW2QH-FvB7S3WatpcH0
+
+### RefreshToken
+POST {{url_dev}}/shop/handlerRefreshToken
+Content-Type: application/json
+x-api-key: 6cfd3ad0-cb83-45dc-8cf9-2ccfed511507
+x-client-id: 6635f4126efae4a70fc38b20
+authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NjM1ZjQxMjZlZmFlNGE3MGZjMzhiMjAiLCJlbWFpbCI6InNob3B0aXBqczlAZ21haWwuY29tIiwiaWF0IjoxNzE2MjczOTc4LCJleHAiOjE3MTY0NDY3Nzh9.OPfVv6YskMDD4TVi-fECzXw0mLzsQ6mnAi21vqMNU_c
+
+{
+    "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NjM1ZjQxMjZlZmFlNGE3MGZjMzhiMjAiLCJlbWFpbCI6InNob3B0aXBqczlAZ21haWwuY29tIiwiaWF0IjoxNzE2MjczOTc4LCJleHAiOjE3MTY4Nzg3Nzh9.rGePpdVbMOWxTu5qnX36xV6s9_rSHl_5HW_spz869gY"
+}
