@@ -99,6 +99,42 @@ class ProductController {
             metadata: await ProductFactory.searchProduct(req.params),
         }).send(res);
     }
+
+    
+    /**
+     * 
+     * @desc Query all product
+     * @param {String} product_shop 
+     * @param {number} limit - default 50 
+     * @param {number} skip - default 0 
+     */
+    getAllProduct = async(req, res, next) => {
+        new SuccessResponse({
+            message: "Find All Products Successfully!!!!",
+            metadata: await ProductFactory.findAllProducts(req.query),
+        }).send(res);
+    }
+    
+    /**
+     * 
+     * @desc Query all product
+     * @param {String} product_shop 
+     * @param {number} limit - default 50 
+     * @param {number} skip - default 0 
+     */
+    findProduct = async(req, res, next) => {
+        new SuccessResponse({
+            message: "Find Product Successfully!!!!",
+            metadata: await ProductFactory.findProduct(req.params),
+        }).send(res);
+    }
+
+    updateProduct = async (req,res,next)=>{
+        new SuccessResponse({
+            message: "Update Product Successfully!!!!",
+            metadata: await ProductFactory.updateProduct(req.body.product_type, req.params.id,{...req.body, product_shop: req.user.userId}),
+        }).send(res);
+    }
 }
 
 module.exports = new ProductController(); 

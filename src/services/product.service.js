@@ -2,7 +2,19 @@
 
 const { BadRequestError } = require("../core/error.response");
 const { product, clothe, electronic } = require("../models/product.model");
-const { queryProducts ,publishProductByShop, unPublishProductByShop , searchProductByUser} = require("../models/repositories/product.repo");
+const {
+  queryProducts,
+  publishProductByShop,
+  unPublishProductByShop,
+  searchProductByUser,
+  queryProducts1,
+  updateProductById,
+} = require("../models/repositories/product.repo");
+const {
+  ToColumnDataUnSelect,
+  RemoveUndefined,
+  FlattenObject,
+} = require("../utils");
 
 class Product {
   constructor({
@@ -27,6 +39,10 @@ class Product {
 
   async createProduct(product_id) {
     return await product.create({ ...this, _id: product_id });
+  }
+
+  async updateProduct(product_id, body) {
+    return await updateProductById({ product_id, body, model: product });
   }
 }
 
@@ -63,8 +79,35 @@ class ProductFactory {
     return await queryProducts({ query, limit, skip });
   }
 
-  static async searchProduct({keySearch}){
-    return await searchProductByUser({keySearch});
+  static async searchProduct({ keySearch }) {
+    return await searchProductByUser({ keySearch });
+  }
+
+  static async findAllProducts({
+    limit = 50,
+    sort = "ctime",
+    page = 1,
+    filter = { isPublished: true },
+    select = ["product_name", "product_thumb", "product_price"],
+  }) {
+    return await queryProducts1({ limit, sort, page, filter, select });
+  }
+
+  static async findProduct({
+    product_id,
+    unSelect = ["__v", "product_attributes"],
+  }) {
+    return await product
+      .findById(product_id)
+      .select(ToColumnDataUnSelect(unSelect))
+      .lean();
+  }
+
+  static async updateProduct(type, product_id, payload) {
+    const producClass = ProductFactory.productRegistry[type];
+    if (!producClass) throw new BadRequestError(`Invalid product type ${type}`);
+
+    return new producClass(payload).updateProduct(product_id);
   }
 }
 
@@ -80,6 +123,26 @@ class Clothing extends Product {
     if (!newProduct) throw new BadRequestError("create new product error");
 
     return newProduct;
+  }
+
+  async updateProduct(product_id) {
+    //1. remove attr has null or undefined
+    const body = RemoveUndefined(this);
+    console.log(`body:::::::::::::::::`, body);
+    //2. check xem update o dau? product hay attribute?
+    if (body.product_attributes) {
+      //update child
+      const attributesBody = FlattenObject(body.product_attributes);
+      console.log(`attributesBody:::::::::::::::::`, attributesBody);
+      await updateProductById({
+        product_id,
+        body: attributesBody,
+        model: clothe,
+      });
+    }
+
+    const updateProduct = await super.updateProduct(product_id, body= FlattenObject(body));
+    return updateProduct;
   }
 }
 
